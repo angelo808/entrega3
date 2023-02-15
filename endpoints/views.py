@@ -45,3 +45,84 @@ def obtenerRestaurante(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)
+
+@csrf_exempt
+def codigopedido(request):
+    if request.method == "POST":
+        dictDataRequest = json.loads(request.body)
+        codigopedido = dictDataRequest["codigopedido"]
+
+        # TODO: Consultar a base de datos
+        if codigopedido == "asd":
+            # Correcto
+            dictOk = {
+                "error": ""
+            }
+            return HttpResponse(json.dumps(dictOk))
+        else:
+            # Error codigo de pedido
+            dictError = {
+                "error": "Error en codigo de pedido"
+            }
+            strError = json.dumps(dictError)
+            return HttpResponse(strError)
+
+    else:
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)     
+@csrf_exempt           
+def login(request):
+    if request.method == "POST":
+        dictDataRequest = json.loads(request.body)
+        usuario = dictDataRequest["usuario"]
+        password = dictDataRequest["password"]
+
+        # TODO: Consultar a base de datos
+        if usuario == "pw" and password == "123":
+            # Correcto
+            dictOk = {
+                "error": ""
+            }
+            return HttpResponse(json.dumps(dictOk))
+        else:
+            # Error login
+            dictError = {
+                "error": "Error en login"
+            }
+            strError = json.dumps(dictError)
+            return HttpResponse(strError)
+
+    else:
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+def obtenerCarrito(request):
+    if request.method == "GET":
+        listaCarritoQuerySet = Carrito.objects.filter(estado="A")
+        listaCarrito = []
+        for c in listaCarritoQuerySet:
+            listaCarrito.append({
+                "id" : c.id,
+                "contenido" : c.contenido,
+                "valor":c.valor
+            })
+
+        dictOK = {
+            "error" : "",
+            "carrito" : listaCarrito,
+            "valor" : listaCarrito
+        }
+        return HttpResponse(json.dumps(dictOK))
+
+    else:
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
