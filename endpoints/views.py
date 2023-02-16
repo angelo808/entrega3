@@ -144,34 +144,7 @@ def codigopedido(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)     
-@csrf_exempt           
-def login(request):
-    if request.method == "POST":
-        dictDataRequest = json.loads(request.body)
-        usuario = dictDataRequest["usuario"]
-        password = dictDataRequest["password"]
 
-        # TODO: Consultar a base de datos
-        if usuario == "pw" and password == "123":
-            # Correcto
-            dictOk = {
-                "error": ""
-            }
-            return HttpResponse(json.dumps(dictOk))
-        else:
-            # Error login
-            dictError = {
-                "error": "Error en login"
-            }
-            strError = json.dumps(dictError)
-            return HttpResponse(strError)
-
-    else:
-        dictError = {
-            "error": "Tipo de peticion no existe"
-        }
-        strError = json.dumps(dictError)
-        return HttpResponse(strError)
 
 def obtenerCarrito(request):
     if request.method == "GET":
@@ -197,7 +170,8 @@ def obtenerCarrito(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)
-    
+
+@csrf_exempt  
 def obtenerCategorias(request):
     if request.method == "GET":
         listaCategoriasQuerySet = Categoria.objects.filter(estado="A")
@@ -220,3 +194,37 @@ def obtenerCategorias(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)
+    
+"""
+Path: /endpoints/categoria/crear POST
+Request:
+{
+    "nombre" : "...",
+    "estado" : "A"
+}
+Response:
+{
+    "error" : ""
+}
+"""
+@csrf_exempt
+def registrarCategorias(request):
+    if request.method != "POST":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+    
+    dictCategoria = json.loads(request.body)
+    nombre = dictCategoria["nombre"]
+    estado = dictCategoria["estado"]
+
+    cat = Categoria(nombre= nombre, estado = estado)
+    cat.save() #Registra en la bd la nueva categoria
+
+    dictOK = {
+        "error" : ""
+    }
+    return HttpResponse(json.dumps(dictOK))
+    
