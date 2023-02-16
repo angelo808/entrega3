@@ -21,7 +21,7 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("endpoints/", include("endpoints.urls"))
+    path("endpoints/", include("endpoints.urls")),
     path("codigopedido", views.codigopedido),
     path("login", views.login)
 ]
