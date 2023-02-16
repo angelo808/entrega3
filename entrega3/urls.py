@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from endpoints import views
+from . import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("endpoints/", include("endpoints.urls"))
+    path("codigopedido", views.codigopedido),
+    path("login", views.login)
 ]
