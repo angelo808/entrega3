@@ -227,4 +227,6 @@ def registrarCategorias(request):
         "error" : ""
     }
     return HttpResponse(json.dumps(dictOK))
+
+
     
