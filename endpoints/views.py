@@ -1,49 +1,21 @@
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.shortcuts import HttpResponse
+from django.http import HttpResponse
+from .models import Usuario, Categoria
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 import json
-from .models import Categoria, Carrito, Restaurante
+from .models import Categoria, Carrito, Restaurante,Usuario
 
 
-# /endpoints/login
-@csrf_exempt
-def login(request):
-    if request.method == "POST":
-        dictDataRequest = json.loads(request.body)
-        usuario = dictDataRequest["usuario"]
-        password = dictDataRequest["password"]
-
-        # TODO: Consultar a base de datos
-        if usuario == "pw" and password == "123":
-            # Correcto
-            dictOk = {
-                "error": ""
-            }
-            return HttpResponse(json.dumps(dictOk))
-        else:
-            # Error login
-            dictError = {
-                "error": "Error en login"
-            }
-            strError = json.dumps(dictError)
-            return HttpResponse(strError)
-
-    else:
-        dictError = {
-            "error": "Tipo de peticion no existe"
-        }
-        strError = json.dumps(dictError)
-        return HttpResponse(strError)
+# Create your views here.
 
 def obtenerRestaurante(request):
-    
     if request.method == "GET":
         idCategoria = request.GET.get("categoria")
 
         if idCategoria == None:
             dictError = {
-                "error": "Debe enviar una categoria como query parameter."
+                "error": "Debe enviar una categoria como query paremeter."
             }
             strError = json.dumps(dictError)
             return HttpResponse(strError)
@@ -68,7 +40,7 @@ def obtenerRestaurante(request):
        
         dictResponse = {
             "error": "",
-            "restaurantes": list(restaurantesFiltrados)         
+            "restaurantes": list(restaurantesFiltrados)
         }
         strResponse = json.dumps(dictResponse)
         return HttpResponse(strResponse)
@@ -107,6 +79,52 @@ def codigopedido(request):
         strError = json.dumps(dictError)
         return HttpResponse(strError)     
 
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        dictDataRequest = json.loads(request.body)
+        usuario = dictDataRequest['usuario']
+        password = dictDataRequest['password']
+
+        usuarios = Usuario.objects.all()
+
+        for u in usuarios: 
+            if u.usuario == usuario and u.password == password:
+                dictOK = {
+                    'error': '',
+                    'userid': u.pk
+                }
+                return HttpResponse(json.dumps(dictOK))
+            else:
+                dictError = {
+                'error': 'No existe esa cuenta'
+                }
+                strError = json.dumps(dictError)
+                return HttpResponse(strError)
+    else:
+        dictError = {
+            'error': 'Tipo de peticion no existe'
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+
+@csrf_exempt           
+def soporte(request):
+    if request.method == "POST":
+        dictDataRequest = json.loads(request.body)
+        nombre = dictDataRequest["nombre"]
+        correo = dictDataRequest["correo"]
+        tipoproblema = dictDataRequest["tipoprobema"]
+        problema = dictDataRequest["problema"]
+
+    else:
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
 
 def obtenerCarrito(request):
     if request.method == "GET":
@@ -133,7 +151,7 @@ def obtenerCarrito(request):
         strError = json.dumps(dictError)
         return HttpResponse(strError)
 
-@csrf_exempt  
+
 def obtenerCategorias(request):
     if request.method == "GET":
         listaCategoriasQuerySet = Categoria.objects.filter(estado="A")
@@ -141,54 +159,19 @@ def obtenerCategorias(request):
         for c in listaCategoriasQuerySet:
             listaCategorias.append({
                 "id" : c.id,
-                "nombre" : c.nombre
-            })                                
-        
+                "nombreCat" : c.nombreCat
+            })
+
         dictOK = {
             "error" : "",
             "categorias" : listaCategorias
         }
         return HttpResponse(json.dumps(dictOK))
-    
+
     else:
         dictError = {
             "error": "Tipo de peticion no existe"
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)
-    
-"""
-Path: /endpoints/categoria/crear POST
-Request:
-{
-    "nombre" : "...",
-    "estado" : "A"
-}
-Response:
-{
-    "error" : ""
-}
-"""
-@csrf_exempt
-def registrarCategorias(request):
-    if request.method != "POST":
-        dictError = {
-            "error": "Tipo de peticion no existe"
-        }
-        strError = json.dumps(dictError)
-        return HttpResponse(strError)
-    
-    dictCategoria = json.loads(request.body)
-    nombre = dictCategoria["nombre"]
-    estado = dictCategoria["estado"]
 
-    cat = Categoria(nombre= nombre, estado = estado)
-    cat.save() #Registra en la bd la nueva categoria
-
-    dictOK = {
-        "error" : ""
-    }
-    return HttpResponse(json.dumps(dictOK))
-
-
-    
