@@ -1,45 +1,46 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import HttpResponse
-from .models import Usuario, Categoria
+from .models import Usuario, Categoria, Soporte
 from django.views.decorators.csrf import csrf_exempt
 import json
+from .models import Categoria, Carrito, Restaurante,Usuario
 
 
 # Create your views here.
 
 def obtenerRestaurante(request):
     if request.method == "GET":
-        idRestaurante = request.GET.get("categoria")
+        idCategoria = request.GET.get("categoria")
 
-        if idRestaurante == None:
+        if idCategoria == None:
             dictError = {
                 "error": "Debe enviar una categoria como query paremeter."
             }
             strError = json.dumps(dictError)
             return HttpResponse(strError)
-
+        
         restaurantesFiltrados = []
 
-        if idRestaurante == "-1" :
-            peliculasQS = Pelicula.objects.all()
+        if idCategoria == "-1" :
+            restaurantesQS = Restaurante.objects.all()
         else:
-            peliculasQS = Pelicula.objects.filter(categoria__pk=idRestaurante)
-        
-        for p in peliculasQS:
-            peliculasFiltradas.append({
-                "id" : p.pk,
-                "nombre" : p.nombre,
-                "url" : p.url,
-                "categoria" : {
-                    "id" : p.categoria.pk,
-                    "nombre" : p.categoria.nombre
-                }
-            })
+            restaurantesQS = Restaurante.objects.filter(categoria__pk=idCategoria)
 
+        for r in restaurantesQS:
+            restaurantesFiltrados.append({
+                "id" : r.pk,
+                "nombre" : r.nombre,
+                "url" : r.url,
+                "categoria" : {
+                    "id": r.categoria.pk,
+                    "nombre" : r.categoria.nombre
+                } 
+            })
+       
         dictResponse = {
             "error": "",
-            "peliculas": peliculasFiltradas
+            "restaurantes": list(restaurantesFiltrados)
         }
         strResponse = json.dumps(dictResponse)
         return HttpResponse(strResponse)
@@ -77,6 +78,33 @@ def codigopedido(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)     
+    
+@csrf_exempt
+def soporte(request):
+    if request.method == 'POST':
+        dictDataRequest = json.loads(request.body)
+        nombre = dictDataRequest['nombreo']
+        correo = dictDataRequest['correo']
+        tipoproblema = dictDataRequest['tipoproblema']
+        problema = dictDataRequest['problema']
+
+        listaSoportes = Soporte.objects.all()
+
+        for u in listaSoportes:
+
+            newSoporte = Soporte(nombre=nombre, correo=correo, tipoproblema=tipoproblema, problema=problema)
+            newSoporte.save()
+            dictOK = {
+                    'error': ''
+                }
+            return HttpResponse(json.dumps(dictOK))
+
+    else:
+        dictError = {
+            'error': 'peticio no existe'
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
 
 @csrf_exempt
 def login(request):
@@ -158,7 +186,7 @@ def obtenerCategorias(request):
         for c in listaCategoriasQuerySet:
             listaCategorias.append({
                 "id" : c.id,
-                "nombreCat" : c.nombreCat
+                "nombre" : c.nombre
             })
 
         dictOK = {
@@ -174,3 +202,23 @@ def obtenerCategorias(request):
         strError = json.dumps(dictError)
         return HttpResponse(strError)
 
+@csrf_exempt
+def registrarCategorias (request):
+    if request.method != "POST":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+    dictCategoria = json.loads(request.body)
+    nombre = dictCategoria["nombre"]
+    estado = dictCategoria["estado"]
+
+    cat = Categoria(nombre=nombre, estado=estado)
+    cat.save() # Registra en la bd la nueva categoria
+
+    dictOK = {
+        "error" : ""
+    }
+    return HttpResponse(json.dumps(dictOK))

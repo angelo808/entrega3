@@ -13,6 +13,16 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
+class Soporte(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=25)
+    correo = models.CharField(max_length=25)
+    tipoproblema = models.CharField(max_length=25)
+    problema = models.CharField(max_length=25)
+
+    def __str__(self):
+        return self.nombre
+
 class Usuario(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.CharField(max_length=25)
