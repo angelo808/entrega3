@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'entrega3.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
+        'NAME': 'entrega4',
         'USER': 'postgres',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
