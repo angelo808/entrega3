@@ -159,7 +159,7 @@ def obtenerCategorias(request):
         for c in listaCategoriasQuerySet:
             listaCategorias.append({
                 "id" : c.id,
-                "nombreCat" : c.nombreCat
+                "nombre" : c.nombre
             })
 
         dictOK = {
