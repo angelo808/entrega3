@@ -20,8 +20,9 @@ from endpoints import views
 
 
 urlpatterns = [
+    path('login', views.login),
     path('admin/', admin.site.urls),
     path("endpoints/", include("endpoints.urls")),
     path("codigopedido", views.codigopedido),
-    path("login", views.login)
+
 ]
