@@ -35,7 +35,8 @@ def obtenerRestaurante(request):
                 "categoria" : {
                     "id": r.categoria.pk,
                     "nombre" : r.categoria.nombre
-                } 
+                },
+                "abierto" : r.abierto 
             })
        
         dictResponse = {
@@ -142,7 +143,7 @@ def soporte(request):
         dictDataRequest = json.loads(request.body)
         nombre = dictDataRequest["nombre"]
         correo = dictDataRequest["correo"]
-        tipoproblema = dictDataRequest["tipoprobema"]
+        tipoproblema = dictDataRequest["tipoproblema"]
         problema = dictDataRequest["problema"]
 
     else:
@@ -222,3 +223,7 @@ def registrarCategorias (request):
         "error" : ""
     }
     return HttpResponse(json.dumps(dictOK))
+
+
+
+
