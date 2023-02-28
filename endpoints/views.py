@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from .models import Usuario, Categoria, Soporte
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Categoria, Carrito, Restaurante,Usuario
+from .models import Categoria,Restaurante,Usuario,Pedido
 
 
 # Create your views here.
@@ -78,7 +78,64 @@ def codigopedido(request):
             "error": "Tipo de peticion no existe"
         }
         strError = json.dumps(dictError)
-        return HttpResponse(strError)     
+        return HttpResponse(strError)   
+
+def codigopedido(request):
+    if request.method == "GET":
+
+        codigopedidos = Pedido.objects.all()  
+        listadepedidos = []
+
+        for v in codigopedidos: 
+            listadepedidos.append({
+                "id": v.id,
+                "codigopedido":v.codigopedido,
+                "estado": v.estado,
+                "plato": v.plato,
+                "valor": v.valor,
+
+            })
+
+        dictOK = {
+            "error" : "",
+            "codigopedido" : listadepedidos
+        }
+        return HttpResponse(json.dumps(dictOK))
+    else:
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)      
+
+@csrf_exempt
+def buscarcodigopedido(request):
+    if request.method == 'POST':
+        dictDataRequest = json.loads(request.body)
+        codigopedido = dictDataRequest['codigopedido']
+
+
+        codigopedidos = Pedido.objects.all()
+
+        for u in codigopedidos: 
+            if u.codigopedido == codigopedido:
+                dictOK = {
+                    'error': '',
+                    'codigopedidoid': u.pk
+                }
+                return HttpResponse(json.dumps(dictOK))
+            else:
+                dictError = {
+                'error': 'No existe un pedido con ese codigo'
+                }
+                strError = json.dumps(dictError)
+                return HttpResponse(strError)
+    else:
+        dictError = {
+            'error': 'Tipo de peticion no existe'
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError) 
     
 @csrf_exempt
 def soporte(request):
@@ -145,32 +202,6 @@ def soporte(request):
         correo = dictDataRequest["correo"]
         tipoproblema = dictDataRequest["tipoproblema"]
         problema = dictDataRequest["problema"]
-
-    else:
-        dictError = {
-            "error": "Tipo de peticion no existe"
-        }
-        strError = json.dumps(dictError)
-        return HttpResponse(strError)
-
-
-def obtenerCarrito(request):
-    if request.method == "GET":
-        listaCarritoQuerySet = Carrito.objects.filter(estado="A")
-        listaCarrito = []
-        for c in listaCarritoQuerySet:
-            listaCarrito.append({
-                "id" : c.id,
-                "contenido" : c.contenido,
-                "valor":c.valor
-            })
-
-        dictOK = {
-            "error" : "",
-            "carrito" : listaCarrito,
-            "valor" : listaCarrito
-        }
-        return HttpResponse(json.dumps(dictOK))
 
     else:
         dictError = {

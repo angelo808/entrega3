@@ -31,19 +31,25 @@ class Usuario(models.Model):
     def __str__(self):
         return self.usuario
 
-class Carrito(models.Model):
-    CARRITO_ESTADOS = (
-        ("A", "Activo"),
-        ("I", "Inactivo") #inactivo es cuando ya se realizo el pedido
-                        #(el pago se hizo y el contenido del carrito pasa a ser compra)
-    )
-    contenido = models.CharField(max_length=50)
-    valor = models.CharField(max_length=3)
-    estado = models.CharField(max_length=1, choices=CARRITO_ESTADOS)
+class CategoriaPlato(models.Model):
+    nombre = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.contenido
+        return self.nombre
 
+class Plato(models.Model):
+    # nombre = models.CharField(max_length=25)
+    # categoria = models.ForeignKey(Categoria_Pla, on_delete=models.CASCADE)
+    # local = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
+    # descripcion = models.CharField(max_length=50)
+    # valor = models.IntegerField()
+
+    nombre = models.CharField(max_length=100)
+    url = models.URLField()
+    categoria = models.ForeignKey(CategoriaPlato, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.nombre
 
 class Restaurante(models.Model):
     nombre = models.CharField(max_length=100)
@@ -54,4 +60,23 @@ class Restaurante(models.Model):
     def __str__(self):
         return self.nombre
 
+
+class Pedido(models.Model):
+    ESTADOPEDIDO_ESTADOPEDIDO = (
+        ("Recibido", "Recibido"),
+        ("Con el repartidor", "Con el repartidor"),
+        ("En camino", "En camino"),
+        ("Entregado", "Entregado")
+    )        
+
+    id = models.AutoField(primary_key=True)
+    local = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
+    codigopedido = models.CharField(max_length=25)
+    estado = models.CharField(max_length=20, choices=ESTADOPEDIDO_ESTADOPEDIDO)
+    plato = models.CharField(max_length=3)
+    valor = models.CharField(max_length=3)
+
+
+    def __str__(self):
+        return self.codigopedido
 
