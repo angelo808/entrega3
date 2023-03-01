@@ -31,6 +31,14 @@ class Usuario(models.Model):
     def __str__(self):
         return self.usuario
 
+class UsuarioR(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.CharField(max_length=25)
+    password = models.CharField(max_length=25)
+
+    def __str__(self):
+        return self.usuario
+
 class Carrito(models.Model):
     CARRITO_ESTADOS = (
         ("A", "Activo"),
@@ -54,4 +62,50 @@ class Restaurante(models.Model):
     def __str__(self):
         return self.nombre
 
+
+class CategoriaPlato(models.Model):
+    CATEGORIA_ESTADOS = (
+        ("A", "Activo"),
+        ("I", "Inactivo")
+    )
+    nombre = models.CharField(max_length=50)
+    estado = models.CharField(max_length=1, choices=CATEGORIA_ESTADOS)
+
+    def __str__(self):
+        return self.nombre
+
+class Plato(models.Model):
+    nombre = models.CharField(max_length=50)
+    url = models.URLField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    categoria = models.ForeignKey(CategoriaPlato, on_delete=models.CASCADE)
+    restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE, related_name='platos')
+
+    def __str__(self):
+        return self.nombre
+
+class Cliente(models.Model):
+    nombre = models.CharField(max_length=255)
+    email = models.EmailField()
+    telefono = models.CharField(max_length=9)
+
+    def __str__(self):
+        return self.nombre
+
+class Pedido(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
+    fecha_pedido = models.DateField()
+    platos = models.ManyToManyField(Plato, through='PedidoXPlato')
+
+    def __str__(self):
+        return self.cliente
+
+class PedidoXPlato(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    plato = models.ForeignKey(Plato, on_delete=models.CASCADE)
+    cantidad = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.pedido
 
