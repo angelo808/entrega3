@@ -13,7 +13,7 @@ admin.site.register(models.Categoria)
 admin.site.register(models.CategoriaPlato)
 admin.site.register(models.Plato)
 admin.site.register(models.Cliente)
-admin.site.register(models.Pedido)
+admin.site.register(models.PedidoC)
 admin.site.register(models.PedidoXPlato)
 
 
