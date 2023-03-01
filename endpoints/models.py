@@ -50,8 +50,21 @@ class Carrito(models.Model):
     estado = models.CharField(max_length=1, choices=CARRITO_ESTADOS)
 
     def __str__(self):
-        return self.contenido
+        return self.nombre
 
+class Plato(models.Model):
+    # nombre = models.CharField(max_length=25)
+    # categoria = models.ForeignKey(Categoria_Pla, on_delete=models.CASCADE)
+    # local = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
+    # descripcion = models.CharField(max_length=50)
+    # valor = models.IntegerField()
+
+    nombre = models.CharField(max_length=100)
+    url = models.URLField()
+    categoria = models.ForeignKey(CategoriaPlato, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.nombre
 
 class Restaurante(models.Model):
     nombre = models.CharField(max_length=100)
