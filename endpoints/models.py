@@ -94,16 +94,15 @@ class Cliente(models.Model):
     def __str__(self):
         return self.nombre
 
-class PedidoC(models.Model):
+class Pedido(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE)
     fecha_pedido = models.DateField()
     platos = models.ManyToManyField(Plato, through='PedidoXPlato')
 
-    def __str__(self):
-        return self.cliente
+   
 
-class Pedido(models.Model):
+class PedidoC(models.Model):
     ESTADOPEDIDO_ESTADOPEDIDO = (
         ("Recibido", "Recibido"),
         ("Con el repartidor", "Con el repartidor"),
@@ -123,7 +122,7 @@ class Pedido(models.Model):
 
 
 class PedidoXPlato(models.Model):
-    pedido = models.ForeignKey(PedidoC, on_delete=models.CASCADE)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
     plato = models.ForeignKey(Plato, on_delete=models.CASCADE)
     cantidad = models.IntegerField(default=1)
 

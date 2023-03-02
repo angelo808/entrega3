@@ -10,6 +10,8 @@ urlpatterns = [
     path("categorias/listar", views.obtenerCategorias),
     path("platos/categorias", views.obtenerCategoriasPlatos),
     path("categorias/crear", views.registrarCategorias),
+    path("platos/crear/", views.registrarCategoriasPlatos),
     path("platos/listar ", views.obtenerPlato),
+    path("pedido/crear", views.pedido),
     path("soporte", views.soporte),
 ]

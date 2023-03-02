@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import HttpResponse
-from .models import CategoriaPlato, Plato, Usuario, Categoria, Soporte, UsuarioR
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import CategoriaPlato, Cliente, PedidoC, Plato, Usuario, Categoria, Soporte, UsuarioR
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Categoria,Restaurante,Usuario,Pedido
@@ -95,7 +97,28 @@ def obtenerPlato(request):
         strError = json.dumps(dictError)
         return HttpResponse(strError)
 
+@csrf_exempt
+def pedido(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        nombre = data.get('nombre')
+        telefono = data.get('telefono')
+        email = data.get('email')
+        restaurante_id= data.get('restaurante')
+        
+        
+        cliente = Cliente(nombre=nombre, email=email, telefono=telefono)
+        cliente.save()
 
+        restaurante = Restaurante.objects.get(id=restaurante_id)
+
+        pedido = Pedido(cliente=cliente, restaurante=restaurante, fecha_pedido=timezone.now())
+        pedido.save()
+
+        return JsonResponse({'message': 'Pedido creado con exito'})
+
+        
+        
 
 @csrf_exempt
 def codigopedido(request):
@@ -128,7 +151,7 @@ def codigopedido(request):
 def codigopedido(request):
     if request.method == "GET":
 
-        codigopedidos = Pedido.objects.all()  
+        codigopedidos = PedidoC.objects.all()  
         listadepedidos = []
 
         for v in codigopedidos: 
@@ -160,7 +183,7 @@ def buscarcodigopedido(request):
         codigopedido = dictDataRequest['codigopedido']
 
 
-        codigopedidos = Pedido.objects.all()
+        codigopedidos = PedidoC.objects.all()
 
         for u in codigopedidos: 
             if u.codigopedido == codigopedido:
@@ -185,11 +208,11 @@ def buscarcodigopedido(request):
 @csrf_exempt
 def soporte(request):
     if request.method == 'POST':
-        dictDataRequest = json.loads(request.body)
-        nombre = dictDataRequest['nombreo']
-        correo = dictDataRequest['correo']
-        tipoproblema = dictDataRequest['tipoproblema']
-        problema = dictDataRequest['problema']
+        data = json.loads(request.body)
+        nombre = data.get('nombre')
+        correo = data.get('correo')
+        tipoproblema = data.get('tipoproblema')
+        problema = data.get('problema')
 
         listaSoportes = Soporte.objects.all()
 
@@ -238,7 +261,7 @@ def login(request):
         strError = json.dumps(dictError)
         return HttpResponse(strError)
     
-csrf_exempt
+@csrf_exempt
 def loginR(request):
     if request.method == 'POST':
         dictDataRequest = json.loads(request.body)
